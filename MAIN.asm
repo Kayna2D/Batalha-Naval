@@ -4,26 +4,102 @@
 		ORG 0100H
 INICIO:
 		ACALL TABULEIRO
-MONTADO:
+
+JOGO:
+		; Pedir linha
+		MOV R6, #0FFH ; Linha
+		MOV R7, #0FFH ; Coluna
 		MOV A,#0FFH
 		ACALL INPUT
-		MOV R5,A
-		SJMP MONTADO
+		CJNE A, #0FFH, CHECK_LINHA
+		SJMP JOGO
 
+CHECK_LINHA:
+		CLR C
+		CJNE A,#5,TESTA_LINHA
+		SJMP JOGO
+	TESTA_LINHA:
+		; A <= 5: C = 0
+		JNC LINHA_INVALIDA
+		MOV R6, A
+		SJMP PEDE_COLUNA
+	LINHA_INVALIDA:
+		; Print linha invalida
+		SJMP JOGO
+
+PEDE_COLUNA:
+		; Pedir coluna
+		MOV A, #0FFH
+		ACALL INPUT
+		CJNE A, #0FFH, CHECK_COL
+		SJMP PEDE_COLUNA
+	CHECK_COL:
+		CLR C
+		MOV R3, A
+		SUBB A, #5
+		JC COL_INVALIDA
+		MOV A, R3
+		SUBB A, #5
+		MOV R7, A
+		SJMP JOGADA
+	COL_INVALIDA:
+		; Print coluna invalida
+		SJMP PEDE_COLUNA
+
+JOGADA:
+		; L*10+20+COL=END
+		MOV A, R6
+		MOV B, #010H
+		MUL AB
+		ADD A, #020H
+		ADD A, R7
+		MOV R0, A
+
+		MOV A, @R0
+		CJNE A, #00H, ACERTO
+		MOV @R0, #02H ; 2 = Tiro errado
+		SJMP FIM_JOGADA
+	ACERTO:
+		CJNE A, #01H, JA_ATINGIDO
+		MOV @R0, #03H ; 3 Tiro certo
+		SJMP FIM_JOGADA
+	JA_ATINGIDO:
+		; Print návio já atingido 
+
+	FIM_JOGADA:
+		LJMP JOGO
 
 TABULEIRO:
-		MOV R0, #020H  
-   		MOV R1, #25
-
-	ZERA_TABULEIRO:
-    	MOV @R0, #0  ; 0 = agua
-    	INC R0           
-    	DJNZ R1, ZERA_TABULEIRO
-
-   		MOV 031H, #01 ; 1 = navio
- 		MOV 022h, #0x01  
-   		MOV 044h, #0x01
-		RET 
+    	MOV 20H, #00H
+    	MOV 21H, #00H
+    	MOV 22H, #01H  ; Navio
+    	MOV 23H, #00H
+    	MOV 24H, #00H
+    
+    	MOV 30H, #00H
+    	MOV 31H, #01H  ; Navio
+    	MOV 32H, #00H
+    	MOV 33H, #00H
+    	MOV 34H, #00H
+     
+    	MOV 40H, #00H
+   	 	MOV 41H, #00H	
+    	MOV 42H, #00H
+    	MOV 43H, #00H
+    	MOV 44H, #01H  ; Navio
+    
+    	MOV 50H, #00H
+    	MOV 51H, #00H
+    	MOV 52H, #00H
+    	MOV 53H, #01H  ; Navio
+    	MOV 54H, #00H
+    
+    	MOV 60H, #01H  ; Navio
+    	MOV 61H, #00H
+    	MOV 62H, #00H
+    	MOV 63H, #00H
+    	MOV 64H, #00H
+    	RET
 
 
 
