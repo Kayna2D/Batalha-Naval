@@ -1,12 +1,32 @@
+		RS EQU P1.3
+		EN EQU P1.2
+
 		ORG 0000H
 		LJMP INICIO
 
 		ORG 0100H
 INICIO:
 		ACALL TABULEIRO
+		ACALL lcd_init
+
+PRINT_LINHA:
+		MOV A, #05H
+		ACALL posicionaCursor 
+		MOV A, #'L'
+		ACALL sendCharacter	
+		MOV A, #'I'
+		ACALL sendCharacter	
+		MOV A, #'N'
+		ACALL sendCharacter	
+		MOV A, #'H'
+		ACALL sendCharacter	
+		MOV A, #'A'
+		ACALL sendCharacter	
+		MOV A, #'?'
+		ACALL sendCharacter	
+		ACALL retornaCursor
 
 JOGO:
-		; Pedir linha
 		MOV R6, #0FFH ; Linha
 		MOV R7, #0FFH ; Coluna
 		MOV A,#0FFH
@@ -22,13 +42,29 @@ CHECK_LINHA:
 		; A <= 5: C = 0
 		JNC LINHA_INVALIDA
 		MOV R6, A
-		SJMP PEDE_COLUNA
+		SJMP PRINT_COLUNA
 	LINHA_INVALIDA:
 		; Print linha invalida
 		SJMP JOGO
 
+PRINT_COLUNA:
+		MOV A, #04H
+		ACALL posicionaCursor 
+		MOV A, #'C'
+		ACALL sendCharacter	
+		MOV A, #'O'
+		ACALL sendCharacter	
+		MOV A, #'L'
+		ACALL sendCharacter	
+		MOV A, #'U'
+		ACALL sendCharacter	
+		MOV A, #'N'
+		ACALL sendCharacter	
+		MOV A, #'A'
+		ACALL sendCharacter	
+		ACALL retornaCursor		
+
 PEDE_COLUNA:
-		; Pedir coluna
 		MOV A, #0FFH
 		ACALL INPUT
 		CJNE A, #0FFH, CHECK_COL
@@ -58,10 +94,12 @@ JOGADA:
 		MOV A, @R0
 		CJNE A, #00H, ACERTO
 		MOV @R0, #02H ; 2 = Tiro errado
+		; print errou
 		SJMP FIM_JOGADA
 	ACERTO:
 		CJNE A, #01H, JA_ATINGIDO
 		MOV @R0, #03H ; 3 Tiro certo
+		; print acerou
 		SJMP FIM_JOGADA
 	JA_ATINGIDO:
 		; Print návio já atingido 
@@ -167,4 +205,169 @@ gotKey:
 gotKey2:
 				MOV A,R2
 				RET  
+
+lcd_init:
+
+	CLR RS	
+	
+	CLR P1.7		
+	CLR P1.6
+	SETB P1.5
+	CLR P1.4	
+
+	SETB EN
+	CLR EN	
+
+	CALL delay 	
+
+	SETB EN		
+	CLR EN		
+
+	SETB P1.7	
+
+	SETB EN		
+	CLR EN		
+	CALL delay	
+
+	CLR P1.7		
+	CLR P1.6		
+	CLR P1.5		
+	CLR P1.4		
+
+	SETB EN		
+	CLR EN		
+
+	SETB P1.6	
+	SETB P1.5	
+
+	SETB EN		
+	CLR EN		
+
+	CALL delay	
+
+	CLR P1.7		
+	CLR P1.6		
+	CLR P1.5		
+	CLR P1.4		
+
+	SETB EN		
+	CLR EN		
+
+	SETB P1.7		
+	SETB P1.6		
+	SETB P1.5		
+	SETB P1.4		
+
+	SETB EN		
+	CLR EN		
+
+	CALL delay		
+	RET
  
+sendCharacter:
+	SETB RS  		
+	MOV C, ACC.7		
+	MOV P1.7, C			
+	MOV C, ACC.6		
+	MOV P1.6, C			
+	MOV C, ACC.5		
+	MOV P1.5, C			
+	MOV C, ACC.4		
+	MOV P1.4, C			
+
+	SETB EN			
+	CLR EN			
+
+	MOV C, ACC.3		
+	MOV P1.7, C			
+	MOV C, ACC.2		
+	MOV P1.6, C			
+	MOV C, ACC.1		
+	MOV P1.5, C			
+	MOV C, ACC.0		
+	MOV P1.4, C			
+
+	SETB EN			
+	CLR EN			
+
+	CALL delay		
+	RET
+
+;|--------------------------------------------------------------------------------------|
+;|linha 1 | 00 | 01 | 02 | 03 | 04 |05 | 06 | 07 | 08 | 09 |0A | 0B | 0C | 0D | 0E | 0F |
+;|linha 2 | 40 | 41 | 42 | 43 | 44 |45 | 46 | 47 | 48 | 49 |4A | 4B | 4C | 4D | 4E | 4F |
+;|--------------------------------------------------------------------------------------|
+posicionaCursor:
+	CLR RS	        
+	SETB P1.7		    
+	MOV C, ACC.6		
+	MOV P1.6, C			
+	MOV C, ACC.5		
+	MOV P1.5, C			
+	MOV C, ACC.4		
+	MOV P1.4, C			
+
+	SETB EN			
+	CLR EN			
+
+	MOV C, ACC.3		
+	MOV P1.7, C			
+	MOV C, ACC.2		
+	MOV P1.6, C			
+	MOV C, ACC.1		
+	MOV P1.5, C			
+	MOV C, ACC.0		
+	MOV P1.4, C			
+
+	SETB EN			
+	CLR EN			
+
+	CALL delay			
+	RET 
+
+retornaCursor:
+	CLR RS	      
+	CLR P1.7		
+	CLR P1.6		
+	CLR P1.5		
+	CLR P1.4		
+
+	SETB EN		
+	CLR EN		
+
+	CLR P1.7		
+	CLR P1.6		
+	SETB P1.5		
+	SETB P1.4		
+
+	SETB EN		
+	CLR EN		
+
+	CALL delay		
+	RET
+
+clearDisplay:
+	CLR RS	      
+	CLR P1.7		
+	CLR P1.6		
+	CLR P1.5		
+	CLR P1.4		
+
+	SETB EN		
+	CLR EN		
+
+	CLR P1.7		
+	CLR P1.6		
+	CLR P1.5		
+	SETB P1.4		
+
+	SETB EN		
+	CLR EN		
+
+	CALL delay		
+	RET
+
+delay:
+	MOV R0, #50
+	DJNZ R0, $
+	RET
