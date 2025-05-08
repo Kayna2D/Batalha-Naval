@@ -26,11 +26,8 @@ ERROU:
 ACERTOU:
 		DB "ACERTOU!"
   		DB 00h
-JA:
-		DB "JA"
-  		DB 00h
-ATINGIDO:
-		DB "ATINGIDO"
+REPETIDO:
+		DB "TIRO REPETIDO"
   		DB 00h
 BEMVINDO:
 		DB "BEM-VINDO A"
@@ -58,11 +55,23 @@ DEF_COLUNA:
 		DB "P/ DEFINIR COL"
 		DB 00h
 VENCE:
-		DB "VENCE O PRIMEIRO"
+		DB "VENCE AQUELE QUE"
 		DB 00h
 PONTOS:
-		DB "A FAZER 5 PONTOS"
+		DB "FIZER + PONTOS"
 		DB 	00h
+COORD:
+		DB "COORDENADA"
+		DB 0
+ABRE:      
+		DB "("
+		DB 0
+VIRGULA:   
+		DB ","
+		DB 0
+FECHA:      
+		DB ")"
+		DB 0
 
 		ORG 0100H
 INICIO:
@@ -119,7 +128,7 @@ INTRODUCAO:
 		ACALL posicionaCursor
 		MOV DPTR,#VENCE    
 		ACALL escreveStringROM
-		MOV A, #40h
+		MOV A, #41h
 		ACALL posicionaCursor
 		MOV DPTR,#PONTOS    
 		ACALL escreveStringROM
@@ -210,6 +219,13 @@ JOGADA:
 		ACALL posicionaCursor
 		MOV DPTR,#ERROU    
 		ACALL escreveStringROM
+		MOV A, #40h
+		ACALL posicionaCursor
+		MOV DPTR,#COORD    
+		ACALL escreveStringROM
+		MOV A, #4Bh
+		ACALL posicionaCursor
+		ACALL MOSTRA_COORD
 		ACALL DELAY_2S
 		SJMP FIM_JOGADA
 	ACERTO:
@@ -221,18 +237,28 @@ JOGADA:
 		ACALL posicionaCursor
 		MOV DPTR,#ACERTOU    
 		ACALL escreveStringROM
+		MOV A, #40h
+		ACALL posicionaCursor
+		MOV DPTR,#COORD    
+		ACALL escreveStringROM
+		MOV A, #4Bh
+		ACALL posicionaCursor
+		ACALL MOSTRA_COORD
 		ACALL DELAY_2S
 		SJMP FIM_JOGADA
 	JA_ATINGIDO:
 		ACALL clearDisplay
-		MOV A, #07h
+		MOV A, #02h
 		ACALL posicionaCursor
-		MOV DPTR,#JA    
+		MOV DPTR,#REPETIDO    
 		ACALL escreveStringROM
-		MOV A, #44h
+		MOV A, #40h
 		ACALL posicionaCursor
-		MOV DPTR,#ATINGIDO    
+		MOV DPTR,#COORD    
 		ACALL escreveStringROM
+		MOV A, #4Bh
+		ACALL posicionaCursor
+		ACALL MOSTRA_COORD
 		ACALL DELAY_2S 
 
 	FIM_JOGADA:
@@ -553,3 +579,26 @@ DELAY_2S_LOOP:
     POP 1
     POP 0
     RET
+
+MOSTRA_NUM:
+		ADD A, #'0'
+		ACALL sendCharacter
+		RET
+
+MOSTRA_COORD:
+		MOV DPTR, #ABRE
+		ACALL escreveStringROM
+
+		MOV A, R6
+		ACALL MOSTRA_NUM
+
+		MOV DPTR, #VIRGULA
+		ACALL escreveStringROM
+
+		MOV A, R7
+		ADDC A, #5
+		ACALL MOSTRA_NUM
+
+		MOV DPTR, #FECHA
+		ACALL escreveStringROM
+		RET
