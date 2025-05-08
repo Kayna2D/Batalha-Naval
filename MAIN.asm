@@ -32,11 +32,98 @@ JA:
 ATINGIDO:
 		DB "ATINGIDO"
   		DB 00h
+BEMVINDO:
+		DB "BEM-VINDO A"
+		DB 00h
+TITULO:
+		DB "BATALHA NAVAL"
+		DB 00h
+JOGUE:
+		DB "JOGUE EM UM"
+		DB 00h
+TAB:
+		DB "TABULEIRO 5x5"
+		DB 00h
+
+TECLE1:
+		DB "DIGITE ENTRE 1-4"
+		DB 00h
+DEF_LINHA:
+		DB "P/ DEFINIR LINHA"
+		DB 00h
+TECLE2:
+		DB "DIGITE ENTRE 5-9"
+		DB 00h
+DEF_COLUNA:
+		DB "P/ DEFINIR COL"
+		DB 00h
+VENCE:
+		DB "VENCE O PRIMEIRO"
+		DB 00h
+PONTOS:
+		DB "A FAZER 5 PONTOS"
+		DB 	00h
 
 		ORG 0100H
 INICIO:
 		ACALL TABULEIRO
 		ACALL lcd_init
+
+INTRODUCAO:
+		ACALL clearDisplay
+		MOV A, #03h
+		ACALL posicionaCursor
+		MOV DPTR,#BEMVINDO    
+		ACALL escreveStringROM
+		MOV A, #42h
+		ACALL posicionaCursor
+		MOV DPTR,#TITULO    
+		ACALL escreveStringROM
+		ACALL DELAY_2S
+
+		ACALL clearDisplay
+		MOV A, #02h
+		ACALL posicionaCursor
+		MOV DPTR,#JOGUE    
+		ACALL escreveStringROM
+		MOV A, #41h
+		ACALL posicionaCursor
+		MOV DPTR,#TAB    
+		ACALL escreveStringROM
+		ACALL DELAY_2S
+
+		ACALL clearDisplay
+		MOV A, #00h
+		ACALL posicionaCursor
+		MOV DPTR,#TECLE1    
+		ACALL escreveStringROM
+		MOV A, #40h
+		ACALL posicionaCursor
+		MOV DPTR,#DEF_LINHA
+		ACALL escreveStringROM
+		ACALL DELAY_2S
+
+		ACALL clearDisplay
+		MOV A, #00h
+		ACALL posicionaCursor
+		MOV DPTR,#TECLE2    
+		ACALL escreveStringROM
+		MOV A, #41h
+		ACALL posicionaCursor
+		MOV DPTR,#DEF_COLUNA    
+		ACALL escreveStringROM
+		ACALL DELAY_2S
+
+		ACALL clearDisplay
+		MOV A, #00h
+		ACALL posicionaCursor
+		MOV DPTR,#VENCE    
+		ACALL escreveStringROM
+		MOV A, #40h
+		ACALL posicionaCursor
+		MOV DPTR,#PONTOS    
+		ACALL escreveStringROM
+		ACALL DELAY_2S
 
 JOGO:
 		ACALL clearDisplay
@@ -123,6 +210,7 @@ JOGADA:
 		ACALL posicionaCursor
 		MOV DPTR,#ERROU    
 		ACALL escreveStringROM
+		ACALL DELAY_2S
 		SJMP FIM_JOGADA
 	ACERTO:
 		CJNE A, #01H, JA_ATINGIDO
@@ -133,6 +221,7 @@ JOGADA:
 		ACALL posicionaCursor
 		MOV DPTR,#ACERTOU    
 		ACALL escreveStringROM
+		ACALL DELAY_2S
 		SJMP FIM_JOGADA
 	JA_ATINGIDO:
 		ACALL clearDisplay
@@ -143,7 +232,8 @@ JOGADA:
 		MOV A, #44h
 		ACALL posicionaCursor
 		MOV DPTR,#ATINGIDO    
-		ACALL escreveStringROM 
+		ACALL escreveStringROM
+		ACALL DELAY_2S 
 
 	FIM_JOGADA:
 		LJMP JOGO
@@ -447,8 +537,19 @@ clearDisplay:
 	DJNZ R4, rotC
 	RET
 
-
 delay:
 	MOV R0, #50
 	DJNZ R0, $
 	RET
+
+DELAY_2S:           
+    PUSH 0
+    PUSH 1
+    MOV R0, #5    
+DELAY_2S_LOOP:
+    MOV R1, #250    
+    DJNZ R1, $      
+    DJNZ R0, DELAY_2S_LOOP
+    POP 1
+    POP 0
+    RET
