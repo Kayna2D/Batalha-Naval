@@ -6,6 +6,7 @@
 
 		ORG 0F00H
 
+; Armazenamento de Strings
 LINHA:
 		DB "LINHA?"
   		DB 00h
@@ -93,18 +94,22 @@ VENCEU:
 		DB "VENCEU!"
 		DB 00h
 
+; Armazenamento de varáveis
 		ORG 070H
-JOGADOR:	DB 1
+JOGADOR:	DB 1 ; controla vez do jogador
 PONTOS_J1:	DB 0
 PONTOS_J2:	DB 0
 NAVIOS:		DB 5
 
 		ORG 0100H
+; Inicializa tabuleiro e display
 INICIO:
-		ACALL lcd_init
+		ACALL lcd_init  
 NOVO_JOGO:
 		ACALL TABULEIRO
 
+; Mostra mensagem de introdução 
+; no display
 INTRODUCAO:
 		ACALL clearDisplay
 		MOV A, #03h
@@ -163,7 +168,7 @@ INTRODUCAO:
 
 
 VEZ:
-		ACALL MOSTRA_VEZ
+		ACALL MOSTRA_VEZ ; Mostra de quem é a vez
 		ACALL DELAY_2S
 
 
@@ -173,11 +178,12 @@ JOGO:
 		ACALL posicionaCursor
 		MOV DPTR,#LINHA    
 		ACALL escreveStringROM
+		ACALL DELAY_2S
 		MOV R6, #0FFH ; Linha
 		MOV R7, #0FFH ; Coluna
 		MOV A,#0FFH
 		ACALL INPUT
-		CJNE A, #0FFH, CHECK_LINHA
+		CJNE A, #0FFH, CHECK_LINHA ; Checa se algo foi digitado
 		SJMP JOGO
 
 CHECK_LINHA:
@@ -187,10 +193,10 @@ CHECK_LINHA:
 	TESTA_LINHA:
 		; A <= 5: C = 0
 		JNC LINHA_INVALIDA
-		MOV R6, A
+		MOV R6, A ; Guarda 1-4
 		ACALL clearDisplay
 		SJMP PEDE_COLUNA
-	LINHA_INVALIDA:
+	LINHA_INVALIDA: ; Mensagem para linha >= 5
 		ACALL clearDisplay
 		MOV A, #05h
 		ACALL posicionaCursor
@@ -208,6 +214,7 @@ PEDE_COLUNA:
 		ACALL posicionaCursor
 		MOV DPTR,#COLUNA    
 		ACALL escreveStringROM	
+		ACALL DELAY_2S
 
 		MOV A, #0FFH
 		ACALL INPUT
@@ -217,7 +224,7 @@ PEDE_COLUNA:
 		CLR C
 		MOV R3, A
 		SUBB A, #5
-		JC COL_INVALIDA
+		JC COL_INVALIDA ; Checa se coluna < 5
 		MOV A, R3
 		SUBB A, #5
 		MOV R7, A
@@ -235,7 +242,7 @@ PEDE_COLUNA:
 		SJMP PEDE_COLUNA
 
 JOGADA:
-		; L*10+20+COL=END
+		; L*10+20+(COL-5)=ENDERECO
 		MOV A, R6
 		MOV B, #010H
 		MUL AB
@@ -244,7 +251,7 @@ JOGADA:
 		MOV R0, A
 
 		MOV A, @R0
-		CJNE A, #00H, ACERTO
+		CJNE A, #00H, ACERTO ; Checa se o tiro foi na água
 		MOV @R0, #02H ; 2 = Tiro errado
 
 		ACALL clearDisplay
@@ -263,9 +270,10 @@ JOGADA:
 		ACALL ALTERNA_JOGADOR
 		SJMP FIM_JOGADA
 	ACERTO:
-		CJNE A, #01H, JA_ATINGIDO
+		CJNE A, #01H, JA_ATINGIDO ; Verifica se o navio ja foi atingido
 		MOV @R0, #03H ; 3 Tiro certo
 
+		; Incremento de pontos
 		MOV A, JOGADOR
 		CJNE A,#1,PONTO_J2
 		MOV A, PONTOS_J1
@@ -276,6 +284,7 @@ JOGADA:
 		MOV A, PONTOS_J2
 		INC A
 		MOV PONTOS_J2, A
+	; Verifica se algum jogador chegou a 3 pontos
 	CHECK_VITORIA:
 		MOV A, PONTOS_J1
 		CJNE A, #03H, VERIFICA_J2
@@ -340,7 +349,7 @@ VITORIA:
 		ACALL escreveStringROM	
 		ACALL DELAY_2S
 
-		LJMP NOVO_JOGO
+		LJMP NOVO_JOGO ; Reinicia o jogo
 
 TABULEIRO:
     	MOV 20H, #00H
