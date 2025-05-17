@@ -45,7 +45,7 @@ TAB:
 		DB 00h
 
 TECLE1:
-		DB "DIGITE ENTRE 1-4"
+		DB "DIGITE ENTRE 0-4"
 		DB 00h
 DEF_LINHA:
 		DB "P/ DEFINIR LINHA"
@@ -94,7 +94,7 @@ VENCEU:
 		DB "VENCEU!"
 		DB 00h
 
-; Armazenamento de varáveis
+; Armazenamento de varï¿½veis
 		ORG 070H
 JOGADOR:	DB 1 ; controla vez do jogador
 PONTOS_J1:	DB 0
@@ -108,7 +108,7 @@ INICIO:
 NOVO_JOGO:
 		ACALL TABULEIRO
 
-; Mostra mensagem de introdução 
+; Mostra mensagem de introduï¿½ï¿½o 
 ; no display
 INTRODUCAO:
 		ACALL clearDisplay
@@ -168,7 +168,7 @@ INTRODUCAO:
 
 
 VEZ:
-		ACALL MOSTRA_VEZ ; Mostra de quem é a vez
+		ACALL MOSTRA_VEZ ; Mostra de quem ï¿½ a vez
 		ACALL DELAY_2S
 
 
@@ -251,7 +251,7 @@ JOGADA:
 		MOV R0, A
 
 		MOV A, @R0
-		CJNE A, #00H, ACERTO ; Checa se o tiro foi na água
+		CJNE A, #00H, ACERTO ; Checa se o tiro foi na ï¿½gua
 		MOV @R0, #02H ; 2 = Tiro errado
 
 		ACALL clearDisplay
@@ -460,7 +460,7 @@ escreveStringROM:
 	; Inicia a escrita da String no Display LCD
 loop:
   MOV A, R1
-	MOVC A,@A+DPTR 	 ;lê da memória de programa
+	MOVC A,@A+DPTR 	 ;lï¿½ da memï¿½ria de programa
 	JZ finish		; if A is 0, then end of data has been reached - jump out of loop
 	ACALL sendCharacter	; send data in A to LCD module
 	INC R1			; point to next piece of data
@@ -571,7 +571,7 @@ sendCharacter:
 	RET
 
 ;Posiciona o cursor na linha e coluna desejada.
-;Escreva no Acumulador o valor de endereço da linha e coluna.
+;Escreva no Acumulador o valor de endereï¿½o da linha e coluna.
 ;|--------------------------------------------------------------------------------------|
 ;|linha 1 | 00 | 01 | 02 | 03 | 04 |05 | 06 | 07 | 08 | 09 |0A | 0B | 0C | 0D | 0E | 0F |
 ;|linha 2 | 40 | 41 | 42 | 43 | 44 |45 | 46 | 47 | 48 | 49 |4A | 4B | 4C | 4D | 4E | 4F |
@@ -606,7 +606,7 @@ posicionaCursor:
 	RET
 
 
-;Retorna o cursor para primeira posição sem limpar o display
+;Retorna o cursor para primeira posiï¿½ï¿½o sem limpar o display
 retornaCursor:
 	CLR RS	
 	CLR P1.7		; |
