@@ -70,6 +70,7 @@ O valor armazenado no endereço é então analisado, se for 0, o novo valor atri
 <img src="img/43.png"/>
 
 **2 jogadores:** endereço 070h alterna entre 1 e 2 para controlar a vez do jogador e mostrar seus pontos (endereços 071h e 072h) no início de cada turno.
+<br/>
 <img src="img/44.png"/>
 <img src="img/45.png"/>
 <img src="img/46.png"/>
@@ -78,7 +79,7 @@ O valor armazenado no endereço é então analisado, se for 0, o novo valor atri
 <img src="img/49.png"/>
 <img src="img/50.png"/>
 
-**Fim de turno:** Turno termina com o display mostrando a coordenada selecionada e uma sub-rotina para alternar o jogador.
+**Fim de turno:** Turno termina mostrando a coordenada e uma sub-rotina para alternar o jogador.
 <img src="img/51.png"/>
 <img src="img/52.png"/>
 <img src="img/53.png"/>
@@ -86,6 +87,7 @@ O valor armazenado no endereço é então analisado, se for 0, o novo valor atri
 <img src="img/55.png"/>
 
 **Pontuação:** em caso de acerto, um ponto é incrementado ao endereço que corresponde ao jogador. É feita então a verificação de vitória (pontos = 3).
+<br/>
 <img src="img/56.png"/>
 <img src="img/57.png"/>
 <img src="img/58.png"/>
